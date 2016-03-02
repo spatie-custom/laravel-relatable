@@ -79,8 +79,8 @@ class TestCase extends BaseTestCase
 
     protected function assertRelatedCollectionContains(Collection $collection, Model $related)
     {
-        $this->assertCount(1, $collection->filter(function (Model $model) use ($related) {
-            return $model->id === $related->id && get_class($model) === $related->getMorphClass();
+        $this->assertTrue($collection->contains(function ($key, Model $item) use ($related) {
+            return $item->id === $related->id && get_class($item) === $related->getMorphClass();
         }));
     }
 }
