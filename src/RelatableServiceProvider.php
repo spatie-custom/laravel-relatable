@@ -17,7 +17,7 @@ class RelatableServiceProvider extends ServiceProvider
             $timestamp = date('Y_m_d_His', time());
 
             $this->publishes([
-                __DIR__.'/../resources/migrations/create_relatables_table.php.stub' =>
+                __DIR__.'/../database/migrations/create_relatables_table.php.stub' =>
                     database_path('migrations/'.$timestamp.'_create_relatables_table.php'),
             ], 'migrations');
         }

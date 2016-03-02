@@ -9,26 +9,27 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 /**
  * @mixin \Illuminate\Database\Eloquent\Model
  *
- * @property \Illuminate\Database\Eloquent\Collection $relatedContentRelations
+ * @property \Illuminate\Database\Eloquent\Collection $related
+ * @property \Illuminate\Database\Eloquent\Collection $relatables
  */
 trait HasRelatedContent
 {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
-    public function relatedContentRelations() : MorphMany
+    public function relatables() : MorphMany
     {
-        return $this->morphMany(RelatedContentRelation::class, 'source');
+        return $this->morphMany(Relatable::class, 'source');
     }
 
     /**
      * @return \Illuminate\Support\Collection
      */
-    public function getRelatedContent() : Collection
+    public function getRelatedAttribute() : Collection
     {
-        return $this->relatedContentRelations
-            ->groupBy(function (RelatedContentRelation $relatedContentRelation) {
-                return $this->getActualClassNameForMorph($relatedContentRelation->related_type);
+        return $this->relatables
+            ->groupBy(function (Relatable $relatable) {
+                return $this->getActualClassNameForMorph($relatable->related_type);
             })
             ->flatMap(function (Collection $typeGroup, string $type) {
                 return $type::whereIn('id', $typeGroup->pluck('related_id'))->get();
@@ -41,9 +42,9 @@ trait HasRelatedContent
      *
      * @return \Spatie\Relatable\Relatable
      */
-    public function relateContent($item, string $type = '') : Relatable
+    public function relate($item, string $type = '') : Relatable
     {
-        return RelatedContentRelation::firstOrCreate($this->getRelatedContentRelationValues($item, $type));
+        return Relatable::firstOrCreate($this->getRelatableValues($item, $type));
     }
 
     /**
@@ -52,9 +53,9 @@ trait HasRelatedContent
      *
      * @return int
      */
-    public function unrelateContent($item, string $type = '') : int
+    public function unrelate($item, string $type = '') : int
     {
-        return RelatedContentRelation::where($this->getRelatedContentRelationValues($item, $type))->delete();
+        return Relatable::where($this->getRelatableValues($item, $type))->delete();
     }
 
     /**
@@ -63,7 +64,7 @@ trait HasRelatedContent
      *
      * @return array
      */
-    protected function getRelatedContentRelationValues($item, string $type = '') : array
+    protected function getRelatableValues($item, string $type = '') : array
     {
         if (! $item instanceof Model && empty($type)) {
             throw new \InvalidArgumentException('If an id is specified as an item, the type isn\'t allowed to be empty.');

@@ -7,7 +7,7 @@ class CreateRelatablesTable extends Migration
 {
     public function up()
     {
-        Schema::create('related_content_relations', function (Blueprint $table) {
+        Schema::create('relatables', function (Blueprint $table) {
             $table->unsignedInteger('source_id');
             $table->string('source_type');
             $table->unsignedInteger('related_id');
@@ -15,13 +15,13 @@ class CreateRelatablesTable extends Migration
 
             $table->unique(
                 ['source_id', 'source_type', 'related_id', 'related_type'],
-                'related_content_relations_unique'
+                'relatables_unique'
             );
         });
     }
 
     public function down()
     {
-        Schema::drop('related_content_relations');
+        Schema::drop('relatables');
     }
 }

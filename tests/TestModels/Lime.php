@@ -3,12 +3,12 @@
 namespace Spatie\Relatable\Test\TestModels;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Relatable\HasRelatedContent;
 
-class Apple extends Model
+class Lime extends Model
 {
-    use HasRelatedContent;
-
     /** @var array */
     protected $guarded = [];
+
+    /** @var bool */
+    public $timestamps = false;
 }
