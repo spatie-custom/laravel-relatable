@@ -1,0 +1,40 @@
+{
+    "name": "spatie/laravel-relatable",
+    "description": "Trait to manage a model's related content",
+    "keywords": [
+        "spatie",
+        "laravel-relatable"
+    ],
+    "homepage": "https://github.com/spatie/laravel-relatable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sebastian De Deyne",
+            "email": "sebastian@spatie.be",
+            "homepage": "https://spatie.be",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php" : "^7.0",
+        "illuminate/database": "^5.1",
+        "illuminate/support": "^5.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.*",
+        "orchestra/testbench": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Spatie\\Relatable\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Spatie\\Relatable\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    }
+}

@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateRelatablesTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('related_content_relations', function (Blueprint $table) {
+            $table->unsignedInteger('source_id');
+            $table->string('source_type');
+            $table->unsignedInteger('related_id');
+            $table->string('related_type');
+
+            $table->unique(
+                ['source_id', 'source_type', 'related_id', 'related_type'],
+                'related_content_relations_unique'
+            );
+        });
+    }
+
+    public function down()
+    {
+        Schema::drop('related_content_relations');
+    }
+}
