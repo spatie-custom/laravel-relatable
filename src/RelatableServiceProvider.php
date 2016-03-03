@@ -12,7 +12,7 @@ class RelatableServiceProvider extends ServiceProvider
             __DIR__.'/../config/laravel-relatable.php' => config_path('laravel-relatable .php'),
         ], 'config');
 
-        if (!class_exists('CreateMediaTable')) {
+        if (!class_exists('CreateRelatablesTable')) {
 
             $timestamp = date('Y_m_d_His', time());
 
