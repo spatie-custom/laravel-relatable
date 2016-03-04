@@ -49,4 +49,17 @@ class Relatable extends Model
     {
         return config('laravel-relatable.table', 'relatables');
     }
+
+    /**
+     * @return \Spatie\Relatable\RelatableValues
+     */
+    public function toRelatableValues() : RelatableValues
+    {
+        return new RelatableValues(
+            $this->source_type,
+            $this->source_id,
+            $this->target_type,
+            $this->target_id
+        );
+    }
 }

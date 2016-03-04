@@ -94,4 +94,21 @@ class HasRelatedContentTest extends TestCase
 
         $this->assertTrue($hasFruit->hasRelated());
     }
+
+    function it_can_sync_related_content_from_a_collection_of_models()
+    {
+        $hasFruit = HasFruitAsRelatedContent::find(1);
+        $lime = Lime::find(1);
+        $strawberry = Strawberry::find(1);
+
+        $hasFruit->relate($lime);
+
+        $hasFruit->syncRelated(collect([$strawberry]));
+
+        $related = $hasFruit->related;
+
+        $this->assertCount(1, $related);
+        $this->assertModelIsRelatedToSource($related, $strawberry);
+        $this->assertModelIsntRelatedToSource($related, $lime);
+    }
 }
