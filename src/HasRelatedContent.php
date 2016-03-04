@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  */
 trait HasRelatedContent
 {
+    /** @var \Illuminate\Support\Collection|null */
+    protected $relatableCache;
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
@@ -27,7 +30,27 @@ trait HasRelatedContent
      */
     public function getRelatedAttribute() : Collection
     {
-        return $this->relatables
+        if ($this->relatableCache === null) {
+            $this->loadRelated();
+        }
+
+        return $this->relatableCache;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRelated() : bool
+    {
+        return ! $this->related->isEmpty();
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function loadRelated() : Collection
+    {
+        return $this->relatableCache = $this->relatables
             ->groupBy(function (Relatable $relatable) {
                 return $this->getActualClassNameForMorph($relatable->related_type);
             })

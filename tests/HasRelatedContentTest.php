@@ -77,4 +77,21 @@ class HasRelatedContentTest extends TestCase
         $this->assertRelatedCollectionContains($related, $lime);
         $this->assertRelatedCollectionContains($related, $strawberry);
     }
+
+    /** @test */
+    function it_can_determine_if_it_has_related_content()
+    {
+        $hasFruit = HasFruitAsRelatedContent::find(1);
+
+        $this->assertFalse($hasFruit->hasRelated());
+    }
+
+    /** @test */
+    function it_can_determine_if_it_doenst_have_related_content()
+    {
+        $hasFruit = HasFruitAsRelatedContent::find(1);
+        $hasFruit->relate(Lime::find(1));
+
+        $this->assertTrue($hasFruit->hasRelated());
+    }
 }
