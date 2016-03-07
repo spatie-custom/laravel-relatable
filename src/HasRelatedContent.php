@@ -45,10 +45,9 @@ trait HasRelatedContent
             ->groupBy(function (Relatable $relatable) {
                 return $this->getActualClassNameForMorph($relatable->related_type);
             })
-            ->map(function (Collection $typeGroup, string $type) {
+            ->flatMap(function (Collection $typeGroup, string $type) {
                 return $type::whereIn('id', $typeGroup->pluck('related_id'))->get();
-            })
-            ->collapse();
+            });
     }
 
     public function hasRelated() : bool
