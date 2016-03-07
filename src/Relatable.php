@@ -40,11 +40,4 @@ class Relatable extends Model
     {
         return config('laravel-relatable.table', 'relatables');
     }
-
-    public function getRelatableValues() : array
-    {
-        return collect($this->getAttributes())
-            ->only('source_type', 'source_id', 'related_type', 'related_id')
-            ->toArray();
-    }
 }

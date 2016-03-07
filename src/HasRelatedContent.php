@@ -2,7 +2,6 @@
 
 namespace Spatie\Relatable;
 
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -24,7 +23,8 @@ trait HasRelatedContent
     }
 
     /**
-     * Returns a of all related models.
+     * Returns a Collection of all related models. The results are cached as a property on the
+     * model, you reload them using the `loadRelated` method.
      *
      * @return \Illuminate\Support\Collection
      */
@@ -56,6 +56,9 @@ trait HasRelatedContent
     }
 
     /**
+     * The `$item` parameter must be an Eloquent model or an ID. If you provide an ID, the model's
+     * morph type must be specified as a second parameter.
+     *
      * @param \Illuminate\Database\Eloquent\Model|int $item
      * @param string|null $type
      *
@@ -69,6 +72,9 @@ trait HasRelatedContent
     }
 
     /**
+     * The `$item` parameter must be an Eloquent model or an ID. If you provide an ID, the model's
+     * morph type must be specified as a second parameter.
+     *
      * @param \Illuminate\Database\Eloquent\Model|int $item
      * @param string|null $type
      *
@@ -82,8 +88,6 @@ trait HasRelatedContent
     /**
      * The `$items` parameter can either contain an Eloquent collection of models, or an array
      * with the shape of [['id' => int, 'type' => string], ...].
-     *
-     * I'll gladly accept PR's optimizing queries here!
      *
      * @param \Illuminate\Database\Eloquent\Collection|array $items
      * @param bool $detaching
