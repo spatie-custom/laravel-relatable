@@ -10,23 +10,22 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 /**
  * @mixin \Illuminate\Database\Eloquent\Model
  *
- * @property EloquentCollection $related
- * @property EloquentCollection $relatables
+ * @property \Illuminate\Support\Collection $related
+ * @property \Illuminate\Support\Collection $relatables
  */
 trait HasRelatedContent
 {
     /** @var \Illuminate\Support\Collection|null */
     protected $relatableCache;
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
-     */
     public function relatables() : MorphMany
     {
         return $this->morphMany(Relatable::class, 'source');
     }
 
     /**
+     * Returns a of all related models.
+     *
      * @return \Illuminate\Support\Collection
      */
     public function getRelatedAttribute() : Collection
@@ -38,11 +37,10 @@ trait HasRelatedContent
         return $this->relatableCache;
     }
 
-    /**
-     * @return \Illuminate\Support\Collection
-     */
     public function loadRelated() : Collection
     {
+        $this->load('relatables');
+
         return $this->relatableCache = $this->relatables
             ->groupBy(function (Relatable $relatable) {
                 return $this->getActualClassNameForMorph($relatable->related_type);
@@ -52,9 +50,6 @@ trait HasRelatedContent
             });
     }
 
-    /**
-     * @return bool
-     */
     public function hasRelated() : bool
     {
         return ! $this->related->isEmpty();
@@ -69,7 +64,7 @@ trait HasRelatedContent
     public function relate($item, string $type = '') : Relatable
     {
         return Relatable::firstOrCreate(
-            $this->getRelatableValues($item, $type)->toArray()
+            $this->getRelatableValues($item, $type)
         );
     }
 
@@ -81,7 +76,7 @@ trait HasRelatedContent
      */
     public function unrelate($item, string $type = '') : int
     {
-        return Relatable::where($this->getRelatableValues($item, $type)->toArray())->delete();
+        return Relatable::where($this->getRelatableValues($item, $type))->delete();
     }
 
     /**
@@ -95,38 +90,48 @@ trait HasRelatedContent
      */
     public function syncRelated($items, $detaching = true)
     {
+        if ($items instanceof Collection) {
+            $items = $items
+                ->map(function (Model $item) : array {
+                    return [
+                        'type' => $item->getMorphClass(),
+                        'id' => $item->getKey(),
+                    ];
+                });
+        }
+
+        $items = collect($items);
+
         $current = $this->relatables->map(function (Relatable $relatable) {
-            return $relatable->toRelatableValues();
+            return [
+                'type' => $relatable->related_type,
+                'id' => $relatable->related_id,
+            ];
         });
 
-        
-
-        $attach = $items
-            ->filter(function (array $values) use ($current) {
-                return ! $current->contains($values);
-            })
-            ->toArray();
+        $items
+            ->each(function (array $values) {
+                $this->relate($values['id'], $values['type']);
+            });
 
         if ($detaching) {
-            $detach = $current
+            $current
                 ->filter(function (array $values) use ($items) {
                     return ! $items->contains($values);
                 })
-                ->toArray();
-
-            $this->unrelateMany($detach);
+                ->each(function (array $values) {
+                    $this->unrelate($values['id'], $values['type']);
+                });
         }
-
-        $this->relateMany($attach);
     }
 
     /**
      * @param \Illuminate\Database\Eloquent\Model|int $item
      * @param string|null $type
      *
-     * @return \Spatie\Relatable\RelatableValues
+     * @return array
      */
-    protected function getRelatableValues($item, string $type = '') : RelatableValues
+    protected function getRelatableValues($item, string $type = '') : array
     {
         if (! $item instanceof Model && empty($type)) {
             throw new \InvalidArgumentException(
@@ -134,11 +139,11 @@ trait HasRelatedContent
             );
         }
 
-        return new RelatableValues(
-            $this->getMorphClass(),
-            $this->getKey(),
-            $item instanceof Model ? $item->getMorphClass() : $type,
-            $item instanceof Model ? $item->getKey() : $item
-        );
+        return [
+            'source_id' => $this->getKey(),
+            'source_type' => $this->getMorphClass(),
+            'related_id' => $item instanceof Model ? $item->getKey() : $item,
+            'related_type' => $item instanceof Model ? $item->getMorphClass() : $type,
+        ];
     }
 }

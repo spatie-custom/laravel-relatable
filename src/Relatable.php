@@ -26,40 +26,25 @@ class Relatable extends Model
     /** @var bool */
     public $timestamps = false;
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
-     */
     public function related() : MorphTo
     {
         return $this->morphTo('related');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
-     */
     public function source() : MorphTo
     {
         return $this->morphTo('source');
     }
 
-    /**
-     * @return string
-     */
-    public function getTable()
+    public function getTable() : string
     {
         return config('laravel-relatable.table', 'relatables');
     }
 
-    /**
-     * @return \Spatie\Relatable\RelatableValues
-     */
-    public function toRelatableValues() : RelatableValues
+    public function getRelatableValues() : array
     {
-        return new RelatableValues(
-            $this->source_type,
-            $this->source_id,
-            $this->target_type,
-            $this->target_id
-        );
+        return collect($this->getAttributes())
+            ->only('source_type', 'source_id', 'related_type', 'related_id')
+            ->toArray();
     }
 }

@@ -3,6 +3,7 @@
 namespace Spatie\Relatable\Test;
 
 use Spatie\Relatable\Test\TestModels\{ HasFruitAsRelatedContent, Lime };
+use Spatie\Relatable\Relatable;
 use Spatie\Relatable\Test\TestModels\Strawberry;
 
 class HasRelatedContentTest extends TestCase
@@ -95,6 +96,7 @@ class HasRelatedContentTest extends TestCase
         $this->assertTrue($hasFruit->hasRelated());
     }
 
+    /** @test */
     function it_can_sync_related_content_from_a_collection_of_models()
     {
         $hasFruit = HasFruitAsRelatedContent::find(1);
@@ -108,7 +110,43 @@ class HasRelatedContentTest extends TestCase
         $related = $hasFruit->related;
 
         $this->assertCount(1, $related);
-        $this->assertModelIsRelatedToSource($related, $strawberry);
-        $this->assertModelIsntRelatedToSource($related, $lime);
+        $this->assertModelIsRelatedToSource($strawberry, $hasFruit);
+        $this->assertModelIsntRelatedToSource($lime, $hasFruit);
+    }
+
+    /** @test */
+    function it_can_sync_related_content_from_an_array_of_types_and_ids()
+    {
+        $hasFruit = HasFruitAsRelatedContent::find(1);
+        $lime = Lime::find(1);
+        $strawberry = Strawberry::find(1);
+
+        $hasFruit->relate($lime);
+
+        $hasFruit->syncRelated([['id' => 1, 'type' => Strawberry::class]]);
+
+        $related = $hasFruit->related;
+
+        $this->assertCount(1, $related);
+        $this->assertModelIsRelatedToSource($strawberry, $hasFruit);
+        $this->assertModelIsntRelatedToSource($lime, $hasFruit);
+    }
+
+    /** @test */
+    function it_can_sync_related_content_without_detaching()
+    {
+        $hasFruit = HasFruitAsRelatedContent::find(1);
+        $lime = Lime::find(1);
+        $strawberry = Strawberry::find(1);
+
+        $hasFruit->relate($lime);
+
+        $hasFruit->syncRelated(collect([$strawberry]), false);
+
+        $related = $hasFruit->loadRelated();
+
+        $this->assertCount(2, $related);
+        $this->assertModelIsRelatedToSource($strawberry, $hasFruit);
+        $this->assertModelIsRelatedToSource($lime, $hasFruit);
     }
 }
