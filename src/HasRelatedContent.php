@@ -94,39 +94,41 @@ trait HasRelatedContent
      */
     public function syncRelated($items, $detaching = true)
     {
-        if ($items instanceof Collection) {
-            $items = $items
-                ->map(function (Model $item) : array {
-                    return [
-                        'type' => $item->getMorphClass(),
-                        'id' => $item->getKey(),
-                    ];
-                });
-        }
-
-        $items = collect($items);
+        $items = $this->getSyncRelatedValues($items);
 
         $current = $this->relatables->map(function (Relatable $relatable) {
-            return [
-                'type' => $relatable->related_type,
-                'id' => $relatable->related_id,
-            ];
+            return $relatable->getRelatedValues();
         });
 
-        $items
-            ->each(function (array $values) {
-                $this->relate($values['id'], $values['type']);
-            });
+        $items->each(function (array $values) {
+            $this->relate($values['id'], $values['type']);
+        });
 
-        if ($detaching) {
-            $current
-                ->filter(function (array $values) use ($items) {
-                    return ! $items->contains($values);
-                })
-                ->each(function (array $values) {
-                    $this->unrelate($values['id'], $values['type']);
-                });
+        if (!$detaching) {
+            return;
         }
+
+        $current
+            ->filter(function (array $values) use ($items) {
+                return ! $items->contains($values);
+            })
+            ->each(function (array $values) {
+                $this->unrelate($values['id'], $values['type']);
+            });
+    }
+
+    protected function getSyncRelatedValues($items) : Collection
+    {
+        if ($items instanceof Collection) {
+            return $items->map(function (Model $item) : array {
+                return [
+                    'type' => $item->getMorphClass(),
+                    'id' => $item->getKey(),
+                ];
+            });
+        }
+
+        return collect($items);
     }
 
     /**

@@ -40,4 +40,12 @@ class Relatable extends Model
     {
         return config('laravel-relatable.table', 'relatables');
     }
+
+    public function getRelatedValues() : array
+    {
+        return [
+            'type' => $this->related_type,
+            'id' => $this->related_id,
+        ];
+    }
 }
