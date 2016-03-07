@@ -9,7 +9,7 @@ class RelatableServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../config/laravel-relatable.php' => config_path('laravel-relatable .php'),
+            __DIR__.'/../config/laravel-relatable.php' => config_path('laravel-relatable.php'),
         ], 'config');
 
         if (!class_exists('CreateRelatablesTable')) {

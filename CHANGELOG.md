@@ -1,20 +1,7 @@
 # Changelog
 
-All Notable changes to `:package_name` will be documented in this file
+All Notable changes to `laravel-relatable` will be documented in this file
 
-## NEXT - YYYY-MM-DD
+## 1.0.0
 
-### Added
-- Nothing
-
-### Deprecated
-- Nothing
-
-### Fixed
-- Nothing
-
-### Removed
-- Nothing
-
-### Security
-- Nothing
+- First release

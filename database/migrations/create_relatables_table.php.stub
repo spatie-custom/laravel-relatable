@@ -7,7 +7,7 @@ class CreateRelatablesTable extends Migration
 {
     public function up()
     {
-        Schema::create('relatables', function (Blueprint $table) {
+        Schema::create(config('laravel-relatable.table', 'relatables'), function (Blueprint $table) {
             $table->string('source_type');
             $table->unsignedInteger('source_id');
             $table->string('related_type');
@@ -22,6 +22,6 @@ class CreateRelatablesTable extends Migration
 
     public function down()
     {
-        Schema::drop('relatables');
+        Schema::drop(config('laravel-relatable.table', 'relatables'));
     }
 }
