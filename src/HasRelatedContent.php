@@ -37,9 +37,11 @@ trait HasRelatedContent
         return $this->relatableCache;
     }
 
-    public function loadRelated() : Collection
+    public function loadRelated($reloadRelatables = true) : Collection
     {
-        $this->load('relatables');
+        if ($reloadRelatables) {
+            $this->load('relatables');
+        }
 
         return $this->relatableCache = $this->relatables
             ->groupBy(function (Relatable $relatable) {
