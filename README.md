@@ -1,3 +1,5 @@
+**NOTE: This package is not registered on Packagist and is abandoned. It's only being use in a few internal projects at Spatie**
+
 # Trait to Manage an Eloquent Model's Related Content
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/laravel-relatable.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-relatable)
